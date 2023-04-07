@@ -1,0 +1,70 @@
+***************************** sign up ****************************
+import { db, app } from '../firebase';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+
+
+const auth = getAuth();
+
+async function simpleSignup(){
+        try 
+        {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user;
+            
+            // Save this user in firestore
+            await setDoc(doc(db, "users", user.uid), {
+              "email":email,              
+              "timestamp": serverTimestamp()
+            })
+      
+            alert('user registered successfully');
+            setEmail('');
+            setPassword('');
+            
+        } 
+        catch (error) {
+            console.log("Something went wrong with registration: " + error);
+        }
+    }
+
+
+
+***************************** sign in ****************************
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+
+const auth = getAuth();
+
+async function simpleSignin(){
+      try {
+        await signInWithEmailAndPassword(auth, email, password)
+        
+        sessionStorage.setItem("username", email);
+        router.push('/');
+      } catch (error) {
+	alert("Something went wrong with Signing In" + error);
+      }
+    }
+
+
+
+***************************** sign out ****************************
+useEffect(() => {
+    if(!sessionStorage.getItem("username")){
+      router.push('/login')
+      setUsername(sessionStorage.getItem("username"))
+    }
+    
+  }, [])
+  
+  function signout(){
+    sessionStorage.removeItem('username');
+    router.push('/login')
+  }
+
+
+
+***************************** session functions ****************************
+var item_value = sessionStorage.getItem("username");
+sessionStorage.setItem("username", email);
+sessionStorage.removeItem('username');
